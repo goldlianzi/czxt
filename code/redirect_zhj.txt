@@ -1,0 +1,23 @@
+/***** Info *****/
+/* Author: zhj */
+/* Function: 实现文件重定向*/
+/***** Info *****/
+
+#include<stdio.h>
+#define max_path_len 20
+
+void redirect_zhj(){
+	/* Note： max_path_len是路径最大的长度*/
+   	/*这里设置为20*/
+	char filepath[max_path_len]="/root/zhj/a.txt";
+	char result[max_path_len];	
+	freopen(filepath,"r",stdin);
+	freopen(filepath,"w",stdout);
+	printf("right!%s",result);
+}
+
+int main(){
+	redirect_zhj();
+        return 0;
+	printf("this is a test");
+}

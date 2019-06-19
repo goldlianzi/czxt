@@ -4,8 +4,8 @@
 *Auther：lishichengyan
 *Student ID：omitted
 *Last Modified： 2017.08.03
-***************************************************************************/ 
- 
+***************************************************************************/
+
 /*必要的头文件包含*/
 #include<stdio.h>
 #include<stdlib.h>
@@ -22,24 +22,24 @@
 #include<fcntl.h>
 #include<dirent.h>
 #include<signal.h>
- 
+
 /*和长度有关的宏定义*/
 #define MAX_LINE 80//最大命令长度
 #define MAX_NAME_LEN 100//最大用户名长度
 #define MAX_PATH_LEN 1000//最大路径长度
- 
+
 /*全局变量申明*/
 extern char **environ;//必须用extern申明，否则会报错
 char *cmd_array[MAX_LINE/2+1];//保存命令输入，就是原框架的char* args[]
 int pipe_fd[2];//和管道有关的数组，作为pipe()的参数
 int cmd_cnt;//命令中字符串的个数
- 
+
 /*老师框架里的函数（有改动）*/
 void readcommand();//读取用户输入
 int is_internal_cmd();//处理内部命令
 int is_pipe();//分析管道命令
 void do_redirection();//分析重定向，对内部命令无效
- 
+
 /*自己定义的函数*/
 void welcome();//打印欢迎信息，带有颜色
 void printprompt();//打印提示符，必须包含当前路径名
@@ -60,7 +60,7 @@ void myenviron_redirect();//带重定向的environ
 void mycd();//cd，切换到某个目录
 void myhelp();//help，必须支持重定向
 void myhelp_redirect();//带有重定向的help
-void print_manual();//打印用户手册，是myhelp()的子函数 
+void print_manual();//打印用户手册，是myhelp()的子函数
 void print_cmdinfo(char* cmdname);//打印每个命令的帮助信息，是myhelp()的子函数
 void myexec();//exec，开启一个新进程并替换当前进程
 void mytest();//test，检查文件类型，支持-l,-b,-c,-d四个选项
@@ -71,7 +71,7 @@ void mybg(pid_t pid);//bg，切换进程到后台
 void mybatch();//实现命令批处理，一次性执行保存在文件里的命令
 void mydir();//dir，显示当前目录下的所有文件
 void mydir_redirect();//带有重定向的dir
- 
+
 /*老师所给函数的实现（框架有调整）*/
 /*实现顺序和定义顺序相同*/
 void readcommand(){
@@ -92,7 +92,7 @@ void readcommand(){
 	}
 	cmd_cnt=cnt;//cmd_cnt的值就是cnt的值
 }
- 
+
 int is_internal_cmd(){
 	//这个函数用来解析内部命令
 	//根据不同的结果来调用不同函数来达到目的
@@ -225,7 +225,7 @@ int is_internal_cmd(){
 	}
 	else if(strcmp(cmd_array[0],"unset")==0){//I'll try latter
 		printf("myshell: unset: not supported currently\n");
-		return 1;		
+		return 1;
 	}
 	else if(strcmp(cmd_array[0],"shift")==0){//I'll try latter
 		printf("myshell: shift: not supported currently\n");
@@ -235,7 +235,7 @@ int is_internal_cmd(){
 		return 0;//返回0使得主函数的continue不执行
 	}
 }
- 
+
 int is_pipe(){
 	for(int i=1;i<cmd_cnt;i++){//从第二个字符串开始分析
 		if(cmd_array[i]!=NULL&&strcmp(cmd_array[i],"|")==0){
@@ -245,7 +245,7 @@ int is_pipe(){
 	}
 	return 0;//没有pipe，返回0
 }
- 
+
 void do_redirection(){
 	//这个函数仅用来实现外部命令的重定向
 	//对于：dir, environ, echo, help命令
@@ -275,10 +275,10 @@ void do_redirection(){
 				cmd_array[i]=NULL;//用NULL替换<
 				i++;
 			}
-		}	
+		}
 	}
 }
- 
+
 /*自己定的函数的实现*/
 /*实现顺序和定义顺序相同*/
 void welcome(){
@@ -289,7 +289,7 @@ void welcome(){
 	printf("\e[35mit's a unix-like shell program made by WuYusong\e[0m\n");
 	printf("\e[35mhope you have a good time with it :-)\e[0m\n");
 }
- 
+
 void printprompt(){
 	//这个函数用来打印命令提示符
 	//为了使程序更友好，加入了颜色
@@ -314,7 +314,7 @@ void printprompt(){
 		printf("$");//普通用户打印$提示符
 	}
 }
- 
+
 int getcommandlen(){
 	int tot_len=0;
 	for(int i=0;i<cmd_cnt;i++){
@@ -322,7 +322,7 @@ int getcommandlen(){
 	}
 	return tot_len+cmd_cnt-1;//因此这里要把空格的长度加进去，直接回车返回-1
 }
- 
+
 void do_pipe(int pos){
 	int pid;
 	if(pos==0){//没有pipe
@@ -336,17 +336,17 @@ void do_pipe(int pos){
 	else{//父进程
 		close(pipe_fd[1]);//关闭写
 		waitpid(pid,NULL,0);//阻塞父进程等待子进程
-	}	
+	}
 }
- 
+
 void run_external_cmd(int pos){
 	int res;
 	res=execvp(cmd_array[pos],cmd_array+pos);//用execvp执行命令
 	if(res<0){//如果执行失败
 		printf("myshell: command not found\n");//打印提示信息
-	}	
+	}
 }
- 
+
 int is_bg_cmd(){
 	int i,lastpos;
 	if(cmd_cnt==0){//直接回车的情况
@@ -363,28 +363,28 @@ int is_bg_cmd(){
 		return  0;//否则返回0
 	}
 }
- 
+
 void myquit(){
 	printf("Thanks for your using，bye-bye！\n");
 	sleep(1);//暂停1s，看上去视觉效果好一些
 	exit(0);
 }
- 
+
 void myexit(){
 	exit(0);//直接退出
 }
- 
+
 void myclr(){
 	printf("\033[2J");//清屏
 	printf("\033[H");//把光标移动到合适的位置
 }
- 
+
 void print_continue_info(){
 	//对于只在脚本循环中有效的continue
 	//在终端下给出提示信息
 	printf("myshell: continue: only meaningful in a 'for','while' or 'until' loop\n");
 }
- 
+
 void mypwd(){
 	char pathname[MAX_PATH_LEN];
 	if(getcwd(pathname,MAX_PATH_LEN)){//获取路径名
@@ -395,7 +395,7 @@ void mypwd(){
 		exit(1);
 	}
 }
- 
+
 void myecho(){
 	for(int i=1;i<cmd_cnt;i++){
 		printf("%s",*(cmd_array+i));
@@ -406,7 +406,7 @@ void myecho(){
 	}
 	printf("\n");//然后换行
 }
- 
+
 void myecho_redirect(){
 	//echo的内容可以被重定向到文件
 	//这个函数虽然长但是并不复杂
@@ -416,7 +416,7 @@ void myecho_redirect(){
 	pid_t pid;
 	char filename[MAX_NAME_LEN];//用来保存文件名
 	for(int i=1;i<cmd_cnt;i++){
-		if(strcmp(cmd_array[i],">")==0||strcmp(cmd_array[i],">>")==0){	
+		if(strcmp(cmd_array[i],">")==0||strcmp(cmd_array[i],">>")==0){
 			if(cmd_array[i+1]==NULL){//如果在>和>>之后没有路径名
 				printf("myshell: syntax error\n");//如果出现错误
 			}
@@ -465,12 +465,12 @@ void myecho_redirect(){
 					perror("myshell: fork");
 					exit(1);
 				}
-				close(fd);//最后不要忘了关闭文件	
+				close(fd);//最后不要忘了关闭文件
 			}
 		}
 	}
 }
- 
+
 void mytime(){
 	int weekday;
 	int month;
@@ -552,7 +552,7 @@ void mytime(){
 	printf("CST ");//CST，意思是China Standard Time
 	printf("%d\n",1900+tp->tm_year);//必须加上1900，返回的值并不是完整的年份，比真实值少了1900
 }
- 
+
 void myenviron(){
 	//用environ[]来实现全局变量的打印
 	//"environ" 必须实现被申明：exetern char** environ
@@ -560,7 +560,7 @@ void myenviron(){
 		printf("%s\n",environ[i]);
 	}
 }
- 
+
 void myenviron_redirect(){
 	//把环境变量重定向到文件
 	//思路是用dup2()
@@ -585,7 +585,7 @@ void myenviron_redirect(){
 			dup2(fd,1);//把stdout重定向到fd
 			for(int i=0;environ[i]!=NULL;i++){//向文件写内容
 				printf("%s\n",environ[i]);
-			}			
+			}
 			exit(0);
 		}
 		else if(pid>0){//父进程
@@ -617,10 +617,10 @@ void myenviron_redirect(){
 			perror("myshell: fork");
 			exit(1);
 		}
-		close(fd);	
+		close(fd);
 	}
 }
- 
+
 void mycd(){
 	struct passwd *pwd;//用来获取参数pw_dir
 	char pathname[MAX_PATH_LEN];//储存路径名
@@ -634,11 +634,11 @@ void mycd(){
 	}
 	else{//如果有路径
 		if(chdir(cmd_array[1])==-1){//如果chdir执行失败
-			printf("myshell: cd: %s :No such file or directory\n",cmd_array[1]);//打印提示信息		
-		}	
+			printf("myshell: cd: %s :No such file or directory\n",cmd_array[1]);//打印提示信息
+		}
 	}
 }
- 
+
 void myhelp(){
 	if(cmd_cnt==1){//如果是不带参数的help
 		print_manual();//调用子函数print_manual打印用户帮助手册
@@ -650,7 +650,7 @@ void myhelp(){
 		printf("myshell: help: Invalid use of help command\n");//打印提示信息
 	}
 }
- 
+
 void myhelp_redirect(){
 	//重定向帮助信息到文件
 	//这个函数并不支持"help [command] > filename"这样的格式
@@ -706,7 +706,7 @@ void myhelp_redirect(){
 		close(fd);//不要忘记关闭文件
 	}
 }
- 
+
 void print_manual(){
 	//这个函数很“无聊”但是很重要
 	//它为用户打印myshell命令的帮助信息
@@ -739,9 +739,9 @@ void print_manual(){
 	printf("for more information, use help [command] to see diffirent options of each command\n");
 	fflush(stdout);
 }
- 
+
 void print_cmdinfo(char* cmdname){
-	//这个函数显示myshell命令的option 
+	//这个函数显示myshell命令的option
 	//需要说明的是[command] --help这样的格式是无效的
 	//因为这会带来分析命令是不必要的麻烦
 	//正确的格式是help [command]
@@ -857,7 +857,7 @@ void print_cmdinfo(char* cmdname){
 		printf("wish you find your Mr/Miss.Right :-)\n");
 	}
 }
- 
+
 void myexec(){
 	//这有点像daemon（守护进程）
 	//但是两者是有区别的
@@ -885,7 +885,7 @@ void myexec(){
 		}
 	}
 }
- 
+
 void mytest(){
 	if(cmd_cnt!=3){//命令中的字符串格式只有3个
 		printf("myshell: test: incorrect number of arguments\n");
@@ -911,8 +911,8 @@ void mytest(){
 					printf("yes,this is a symbolic link\n");
 				}
 				else{
-					printf("no,this is NOT a symbolic link\n");					
-				}				
+					printf("no,this is NOT a symbolic link\n");
+				}
 			}
 			else if(strcmp(cmd_array[1],"-b")==0){//检查是不是块设备（block device）
 				mode=mode&S_IFBLK;//位与操作
@@ -920,7 +920,7 @@ void mytest(){
 					printf("yes,this is a block device\n");
 				}
 				else{
-					printf("no,this is NOT a block device\n");					
+					printf("no,this is NOT a block device\n");
 				}
 			}
 			else if(strcmp(cmd_array[1],"-c")==0){//检查是不是字符设备（character device）
@@ -929,8 +929,8 @@ void mytest(){
 					printf("yes,this is a character device\n");
 				}
 				else{
-					printf("no,this is NOT a character device\n");					
-				}			
+					printf("no,this is NOT a character device\n");
+				}
 			}
 			else if(strcmp(cmd_array[1],"-d")==0){//检查是不是目录文件（directory）
 				mode=mode&S_IFDIR;//位与操作
@@ -938,8 +938,8 @@ void mytest(){
 					printf("yes,this is a directory\n");
 				}
 				else{
-					printf("no,this is NOT a directory\n");					
-				}			
+					printf("no,this is NOT a directory\n");
+				}
 			}
 			else{//其他的非法输入
 				printf("myshell: test: only 4 options are allowed:\n");
@@ -949,12 +949,12 @@ void mytest(){
 		}
 	}
 }
- 
+
 void myumask(){
 	int bit1,bit2,bit3,bitsum;
 	mode_t new_umask,old_umask;
 	if(cmd_cnt==1){//只用一个umask可以查看默认值
-		printf("myshell: default umask value: %o\n",2);	
+		printf("myshell: default umask value: %o\n",2);
 		return;
 	}
 	if(strlen(cmd_array[1])!=4||cmd_array[1][0]!='0'){//对于不正确的格式打印提示信息
@@ -1058,7 +1058,7 @@ void myumask(){
 	printf("myshell: old value: %o\n",old_umask);//打印旧的值
 	printf("myshell: new value: %o\n",new_umask);//打印当前的新值
 }
- 
+
 void myjobs(){
 	//可以使用ps命令来实现查看进程
 	pid_t pid;
@@ -1078,7 +1078,7 @@ void myjobs(){
 		waitpid(pid,NULL,0);
 	}
 }
- 
+
 void myfg(pid_t pid){
 	setpgid(pid,pid);
     if (tcsetpgrp(1,getpgid(pid))== 0){
@@ -1089,7 +1089,7 @@ void myfg(pid_t pid){
 		printf("myshell: fg: no such job\n");
 	}
 }
- 
+
 void mybg(pid_t pid){
 	if(kill(pid,SIGCONT)<0){//发送SIGCONT信号
 		printf("myshell: bg: no such job\n");//如果有错就打印提示信息
@@ -1098,7 +1098,7 @@ void mybg(pid_t pid){
 		waitpid(pid,NULL,WUNTRACED);//和myfg()一样，必须用WUNTRACED
 	}
 }
- 
+
 void mybatch(){
 	//这个函数用来支持命令"myshell"
 	//命令的格式是"myshell [filename]"
@@ -1107,7 +1107,7 @@ void mybatch(){
 	FILE *fp,*helper;
 	char filename[MAX_NAME_LEN];
 	char cmdname[MAX_LINE];
-	int fmark,cnt=0;	
+	int fmark,cnt=0;
 	strcpy(filename,cmd_array[1]);//获取文件名
 	fp=fopen(filename,"r");//以只读方式打开文件
 	helper=fopen(filename,"r");//helper在后面也要用到，这里再打开一遍
@@ -1135,7 +1135,7 @@ void mybatch(){
 			cptr=strtok(cmdname," ");//用空格分割命令
 			while(cptr!=NULL){//然后把分割好的内容存到cmd_array
 				cmd_array[num]=(char*)malloc(sizeof(*cptr));
-				strcpy(cmd_array[num++],cptr);//需要注意的是即使直接回车num也是1，这样cmd_cnt至少是1		
+				strcpy(cmd_array[num++],cptr);//需要注意的是即使直接回车num也是1，这样cmd_cnt至少是1
 				cptr=strtok(NULL," ");
 			}
 			cmd_cnt=num;//cmd_cnt取得它的值，和num是相等的
@@ -1182,7 +1182,7 @@ void mybatch(){
 		}
 	}
 }
- 
+
 void mydir(){
 	char pathname[MAX_PATH_LEN];//保存当前路径
 	DIR *dir;//DIR struct保存关于目录的信息
@@ -1197,7 +1197,7 @@ void mydir(){
 		printf("%s\n",dp->d_name);
 	}
 }
- 
+
 void mydir_redirect(){
 	//这个函数支持了mydir()的重定向
 	//>>向文件末尾追加内容（如果文件存在的话，不存在就新建）
@@ -1239,7 +1239,7 @@ void mydir_redirect(){
 			}
 		}
 		close(fd);//别忘了关闭文件
-	}	
+	}
 	else{//带有>>的重定向，添加内容到文件
 		if((fd=open(filename,O_CREAT|O_APPEND|O_WRONLY,0600))<0){//必须使用O_APPEND
 			perror("myshell: open");
@@ -1265,7 +1265,7 @@ void mydir_redirect(){
 		close(fd);//别忘了关闭文件
 	}
 }
- 
+
 int main(){
 	int should_run=1;//标记什么时候退出大循环
 	pid_t pid;//fork的时候要用
@@ -1293,7 +1293,7 @@ int main(){
 			signal(SIGINT,SIG_DFL);//默认:停止进程
 			signal(SIGTSTP,SIG_DFL);//默认:终止进程
 			signal(SIGCONT,SIG_DFL);//用默认的方式处理SIGCONT
-			if(pos_after_pipe){//如果有pipe 
+			if(pos_after_pipe){//如果有pipe
 				close(pipe_fd[0]);//关闭读
 				dup2(pipe_fd[1],1);//把stdout重定向到pipe_fd[1]
 			}
