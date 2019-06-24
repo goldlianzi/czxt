@@ -1,4 +1,4 @@
-/***** Info *****/
+﻿/***** Info *****/
 /* Author: zhj */
 /* Function: 实现管道*/
 /***** Info *****/
@@ -76,3 +76,24 @@ void pipe_zhj(){
 //        return 0;
 //
 //}
+int backstageCmd_djm(){
+	int i= -1;
+	int pid;
+	int __switch = 3;
+	char cmd[MAX_CMD_LEN];
+	strcpy(cmd ,commandCompose[0]);
+	
+	while(strcmp(commandCompose[++i], "&"));
+	commandCompose[i] = NULL;
+	
+	if((pid = fork()) == 0){
+		sleep(1);
+		printf("\n");
+		if((execvp(cmd, commandCompose)) == -1){
+			perror("execvp error\n");
+			exit(1);
+		}
+	}
+	printf("Pid [\e[32;1m%d\e[0m]\n", pid);
+	return __switch;
+}

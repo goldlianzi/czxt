@@ -25,13 +25,14 @@ struct Node* alias_insert(struct Node* currentRecord){
         struct Node* p=currentRecord;
         struct Node* temp=(struct Node*)malloc(sizeof(struct Node));
         //p = (struct Node*)malloc(sizeof(struct Node));
-        char str[50]="zhj='ls -l'";
+        char str[50]="zhj -l";
 
         char *tmp;
-        tmp=strtok(str,"=");
+        tmp=strtok(str," ");
+        printf("tmp:%s\n",tmp);
         strcpy((temp->data).word,tmp);
-        tmp=strtok(NULL,"'");
-        //printf("tmp:%s\n",tmp);
+        tmp=strtok(NULL," ");
+        printf("tmp:%s\n",tmp);
         strcpy((temp->data).mean,tmp);
         p->next=temp;
         p=p->next;

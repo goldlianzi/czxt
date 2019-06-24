@@ -1,0 +1,102 @@
+void pipe_zhj(){
+        /* Note：如下是测试用例 */
+	/* cmd中存放指令序列,cmd[0]为pipe前的指令，cmd为pipe后的指令 */
+	/* param1存放cmd[0]指令的参数 */
+	/* param2存放cmd[1]指令的参数 */
+
+	/* 测试用例 */
+	printf("entering pipe!\n");
+        char cmd1[MAX_CMD_LEN];
+	char cmd2[MAX_CMD_LEN];
+	//int i=0;
+	//int j=0;
+	//char *param1[]={0,0,0,0};
+	//char *param2[]={0,0,0,0};
+	//char *param1[]={"ls","-l",0};
+	//char *param2[]={"grep",".c",0};
+	//printf("dss:%s\n",param1[0]);
+	//char param1[5][MAX_CMD_LEN];
+	//char param2[5][MAX_CMD_LEN];
+
+	/*initialize*/
+
+	//cmd[0]=commandCompose[0];
+	strcpy(cmd1,commandCompose[0]);
+	printf("cmd1:%s\n",cmd1);
+	//strcpy(cmd2,"grep");
+	//printf("cmd1:%s\n",cmd2);
+	//printf("|:%s\n",commandCompose[0]);
+	while(strcmp(commandCompose[i],"|")!=0){
+		printf("%d\n",i);
+		//strcpy(*(param1+j),commandCompose[i]);
+		if(commandCompose[i]!=NULL)
+			//*(param1+1)=commandCompose[i];
+			strcpy(*(param1+j),commandCompose[i]);
+		//param1[j]=commandCompose[i];
+		i++;
+		j++;
+		printf("out:%d\n",strcmp(commandCompose[i],"|"));
+	}
+	printf("out");
+	*(param1+j)=0;
+	//*param1[5]=0;
+	strcpy(cmd2,commandCompose[++i]);
+	printf("cmd2:%s\n",cmd2);
+ 	printf("param1:%s\n",param1[0]);
+	j=0;
+	while(commandCompose[++i]!=NULL){
+		strcpy(param2[j],commandCompose[i--]);
+		//param1[j]=commandCompose[i--];
+		i++;
+		j++;
+	}
+	*param2[j]=0;
+	*param1[5]=0;
+	printf("param2:%s\n",param2[0]);
+
+
+//创建管道
+        int pid;
+        int fd[2];//fd[0]读端，fd[1]写端
+        pipe(fd);
+	int flag;
+	
+//创建子进程
+
+        if((pid=fork())==0){
+
+        //子进程，默认为pipe前的指令ls
+
+                dup2(fd[1],1);//把标准输出流重定向到管道写端
+
+                close(fd[0]);//关闭管道的文件描述符
+
+                close(fd[1]);
+
+                if((flag=execvp(cmd1,param1))<0){
+                        printf("son:no such command %d",flag);
+                }
+
+		//exit(1);
+
+        }
+
+        else{
+
+        //父进程，默认为pipe后的指令
+                waitpid(pid,NULL,0);
+		dup2(fd[0],0);//把标准输入流重定向到管道读端
+                close(fd[0]);
+		close(fd[1]);
+                if((flag=execvp(cmd2,param2))<0){
+
+                        printf("father:no such command %d",flag);
+
+                }
+		//printf("succesee");
+		//exit(1);
+		//return __switch;
+
+        }
+
+}

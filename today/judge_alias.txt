@@ -1,0 +1,43 @@
+char * judge_alias(char *p){
+	flag=0;
+	char *resultStr=NULL;
+	char *target=NULL;
+	char *others=NULL;
+	char *tmp=NULL;
+	resultStr=(char *)malloc(sizeof(char)*100);
+	//tmp=(char *)malloc(sizeof(char)*100);
+	//tmp="";
+	//resultStr="dsd";
+	//strcpy(resultStr,"");
+	//printf("resultstr:%s",resultStr);
+	//strcpy(contentStr,p);
+
+	//char *result = malloc(strlen(s1)+strlen(s2)+1);
+	target=strtok_r(p," ",&tmp);
+	others=strtok_r(NULL," ",&tmp);
+	printf("target:%s",target);
+	if(others!=NULL)
+		printf("others:%s",others);
+	//else
+	//	printf("i must be strong!");
+	if_alias(target);
+	//printf("%d\n",flag);
+	if(flag==1){
+                //printf("substitute:%s\n",substitute_result);
+		strcpy(resultStr,substitute_result); 
+                /*在这里将替换的指令copy给cmd_array[]再进行分析*/
+	}else
+		strcpy(resultStr,target);
+	if(others!=NULL){
+		strcat(resultStr," ");
+		strcat(resultStr,others);
+	}
+		
+	printf("%s",resultStr);
+	return resultStr;
+
+	
+	//cut the command
+	//flag=0;
+	//printf("%d\n",flag);
+}
